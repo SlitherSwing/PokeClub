@@ -1,0 +1,10 @@
+<?php
+
+abstract class Pokemon
+{
+
+}
+
+
+?>
+

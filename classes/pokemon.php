@@ -10,7 +10,7 @@ class Pokemon
 
     public function __construct(string $name, array $types, string $item, string $picture)
     {
-        $this->name = $name;
+        $this->setName($name);
         $this->types = $types;
         $this->item = $item;
         $this->picture = $picture;
@@ -32,6 +32,11 @@ class Pokemon
     }
     public function setName(string $name): void
     {
+        $name = trim($name);
+        if ($name === "") {
+            throw new InvalidArgumentException('Le nom du Pokémon est obligatoire');
+        }
+
         $this->name = $name;
     }
 

@@ -1,1 +1,5 @@
 .DS_Store
+/node_modules/
+/public/assets/css/tailwind.css
+docs/PLAN_DE_DEVELOPPEMENT.md
+/docs/developpement-local/

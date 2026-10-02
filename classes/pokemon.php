@@ -5,13 +5,15 @@ class Pokemon
     private ?int $id = null;
     private string $name;
     private array $types;
+    private array $moves;
     private string $item;
     private string $picture;
 
-    public function __construct(string $name, array $types, string $item, string $picture)
+    public function __construct(string $name, array $types, array $moves, string $item, string $picture)
     {
         $this->setName($name);
         $this->types = $types;
+        $this->setMoves($moves);
         $this->item = $item;
         $this->picture = $picture;
     }
@@ -49,6 +51,33 @@ class Pokemon
         $this->types = $types;
     }
 
+    public function getMoves(): array
+    {
+        return $this->moves;
+    }
+
+    public function setMoves(array $moves): void
+    {
+        $cleanMoves = [];
+        $usedMoves = [];
+        if (count($moves) > 4) {
+            throw new InvalidArgumentException('Le pokémon ne peut apprendre que 4 attaques max');
+        } else {
+            foreach ($moves as $move) {
+                $move = trim($move);
+                $lowerMove = mb_strtolower($move, 'UTF-8');
+
+                if (in_array($lowerMove, $usedMoves, true)) {
+                    throw new InvalidArgumentException('Une attaque ne peut pas être présente deux fois.');
+                }
+
+                $usedMoves[] = $lowerMove;
+                $cleanMoves[] = $move;
+            }
+            $this->moves = $cleanMoves;
+        }
+    }
+
     public function getItem(): string
     {
         return $this->item;
@@ -69,5 +98,4 @@ class Pokemon
 
 
 }
-
 

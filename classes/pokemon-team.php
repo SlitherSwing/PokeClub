@@ -10,25 +10,17 @@ class PokemonTeam
     {
         $this->pokemon = $pokemon;
         $this->team = $team;
-        $this->role = $role;
+        $this->setRole($role);
     }
 
     public function getPokemon(): Pokemon
     {
         return $this->pokemon;
     }
-    public function setPokemon(Pokemon $pokemon): void
-    {
-        $this->pokemon = $pokemon;
-    }
 
     public function getTeam(): Team
     {
         return $this->team;
-    }
-    public function setTeam(Team $team): void
-    {
-        $this->team = $team;
     }
 
     public function getRole(): string
@@ -37,7 +29,11 @@ class PokemonTeam
     }
     public function setRole(string $role): void
     {
-        $this->role = $role;
+        if ($role === "") {
+            throw new InvalidArgumentException('Vous devez définir un rôle pour ce pokémon');
+        } else {
+            $this->role = $role;
+        }
     }
 }
 

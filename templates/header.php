@@ -11,6 +11,3 @@
 
 <body class="p-8">
     <h1 class="mb-4 text-3xl font-bold">Bienvenue sur PokeClub, mon gestionnaire d'équipe en ligne</h1>
-</body>
-
-</html>

@@ -11,35 +11,35 @@ class PokemonRepository
 
     private function fromRow(array $row): Pokemon
     {
-        $types = [$row['type_1']];
-        if ($row['type_2'] !== null) {
-            $types[] = $row['type_2'];
+        $types = [$row['pokemon_type1']];
+        if ($row['pokemon_type2'] !== null) {
+            $types[] = $row['pokemon_type2'];
         }
 
         $moves = [];
-        foreach (['move_1', 'move_2', 'move_3', 'move_4'] as $column) {
+        foreach (['pokemon_move1', 'pokemon_move2', 'pokemon_move3', 'pokemon_move4'] as $column) {
             if ($row[$column] !== null) {
                 $moves[] = $row[$column];
             }
         }
 
         $points = [
-            'hp' => (int) $row['hp'],
-            'atk' => (int) $row['atk'],
-            'def' => (int) $row['def'],
-            'spa' => (int) $row['spa'],
-            'spd' => (int) $row['spd'],
-            'spe' => (int) $row['spe'],
+            'hp' => (int) $row['pokemon_hp'],
+            'atk' => (int) $row['pokemon_atk'],
+            'def' => (int) $row['pokemon_def'],
+            'spa' => (int) $row['pokemon_spa'],
+            'spd' => (int) $row['pokemon_spd'],
+            'spe' => (int) $row['pokemon_spe'],
         ];
 
         $pokemon = new Pokemon(
-            $row['name'],
+            $row['pokemon_name'],
             $types,
             $moves,
-            $row['item'],
+            $row['pokemon_item'] ?? '',
             $points,
-            $row['nature'],
-            $row['picture']
+            $row['pokemon_nature'],
+            $row['pokemon_picture']
         );
         $pokemon->setId((int) $row['id']);
 
@@ -50,7 +50,7 @@ class PokemonRepository
     {
         $name = trim($name);
 
-        $sql = $this->pdo->prepare('SELECT * FROM pokemon WHERE name =:name ORDER BY id');
+        $sql = $this->pdo->prepare('SELECT * FROM pokemon WHERE pokemon_name = :name ORDER BY id');
         $sql->execute(['name' => $name]);
         $rows = $sql->fetchAll();
 
@@ -63,11 +63,11 @@ class PokemonRepository
 
     public function findById(int $id): ?Pokemon
     {
-        $sql = $this->pdo->prepare('SELECT * FROM pokemon WHERE id =:id');
+        $sql = $this->pdo->prepare('SELECT * FROM pokemon WHERE id = :id');
         $sql->execute(['id' => $id]);
         $row = $sql->fetch();
 
-        if ($row == false) {
+        if ($row === false) {
             return null;
         }
 
@@ -115,9 +115,9 @@ class PokemonRepository
 
         if ($pokemon->getId() === null) {
             $sql = 'INSERT INTO pokemon (
-            name, type_1, type_2, item, picture,
-            move_1, move_2, move_3, move_4,
-            hp, atk, def, spa, spd, spe, nature
+            pokemon_name, pokemon_type1, pokemon_type2, pokemon_item, pokemon_picture,
+            pokemon_move1, pokemon_move2, pokemon_move3, pokemon_move4,
+            pokemon_hp, pokemon_atk, pokemon_def, pokemon_spa, pokemon_spd, pokemon_spe, pokemon_nature
         ) VALUES (
             :name, :type_1, :type_2, :item, :picture,
             :move_1, :move_2, :move_3, :move_4,
@@ -131,22 +131,22 @@ class PokemonRepository
             $data['id'] = $pokemon->getId();
 
             $sql = 'UPDATE pokemon SET
-            name = :name,
-            type_1 = :type_1,
-            type_2 = :type_2,
-            item = :item,
-            picture = :picture,
-            move_1 = :move_1,
-            move_2 = :move_2,
-            move_3 = :move_3,
-            move_4 = :move_4,
-            hp = :hp,
-            atk = :atk,
-            def = :def,
-            spa = :spa,
-            spd = :spd,
-            spe = :spe,
-            nature = :nature
+            pokemon_name = :name,
+            pokemon_type1 = :type_1,
+            pokemon_type2 = :type_2,
+            pokemon_item = :item,
+            pokemon_picture = :picture,
+            pokemon_move1 = :move_1,
+            pokemon_move2 = :move_2,
+            pokemon_move3 = :move_3,
+            pokemon_move4 = :move_4,
+            pokemon_hp = :hp,
+            pokemon_atk = :atk,
+            pokemon_def = :def,
+            pokemon_spa = :spa,
+            pokemon_spd = :spd,
+            pokemon_spe = :spe,
+            pokemon_nature = :nature
             WHERE id = :id';
 
             $statement = $this->pdo->prepare($sql);
@@ -156,4 +156,3 @@ class PokemonRepository
 }
 
 ?>
-

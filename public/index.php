@@ -30,13 +30,13 @@ require __DIR__ . '/../src/templates/header.php';
         <?php if (count($pokemons) === 0) { ?>
             <p>Aucun Pokémon à afficher.</p>
         <?php } else { ?>
-            <table>
+            <table class="border-separate border-spacing-2 border-4 border-indigo-600">
                 <thead>
                     <tr>
                         <?php
                         foreach ($pokemons as $pokemonTeam) {
                             $pokemon = $pokemonTeam->getPokemon();
-                            echo '<th>' . e($pokemon->getName()) . '</th>';
+                            echo '<th class="border border-indigo-600 p-2">' . e($pokemon->getName()) . '</th>';
                         }
                         ?>
                     </tr>
@@ -47,28 +47,32 @@ require __DIR__ . '/../src/templates/header.php';
                         <?php
                         foreach ($pokemons as $pokemonTeam) {
                             $pokemon = $pokemonTeam->getPokemon();
-                            echo '<td>' . e($pokemon->getPicture()) . '</td>';
+                            echo '<td class="border border-indigo-600 p-2">';
+                            if ($pokemon->getPicture() !== '') {
+                                echo '<img src="' . e($pokemon->getPicture()) . '" alt="' . e($pokemon->getName()) . '" width="100">';
+                            }
+                            echo '</td>';
                         } ?>
                     </tr>
                     <tr>
                         <?php
                         foreach ($pokemons as $pokemonTeam) {
                             $pokemon = $pokemonTeam->getPokemon();
-                            echo '<td>' . e(implode(' / ', $pokemon->getTypes())) . '</td>';
+                            echo '<td class="border border-indigo-600 p-2">' . e(implode(' / ', $pokemon->getTypes())) . '</td>';
                         } ?>
                     </tr>
                     <tr>
                         <?php
                         foreach ($pokemons as $pokemonTeam) {
                             $pokemon = $pokemonTeam->getPokemon();
-                            echo '<td>' . e($pokemon->getItem()) . '</td>';
+                            echo '<td class="border border-indigo-600 p-2">' . e($pokemon->getItem()) . '</td>';
                         } ?>
                     </tr>
                     <tr>
                         <?php
                         foreach ($pokemons as $pokemonTeam) {
                             $pokemon = $pokemonTeam->getPokemon();
-                            echo '<td>';
+                            echo '<td class="border border-indigo-600 p-2">';
                             foreach ($pokemon->getMoves() as $move) {
                                 echo e($move) . '<br>';
                             }
@@ -80,7 +84,7 @@ require __DIR__ . '/../src/templates/header.php';
                         <?php
                         foreach ($pokemons as $pokemonTeam) {
                             $pokemon = $pokemonTeam->getPokemon();
-                            echo '<td>';
+                            echo '<td class="border border-indigo-600 p-2">';
                             foreach ($pokemon->getEffortPoints() as $key => $points) {
                                 echo $key . ' -> ' . e($points) . '<br>';
                             }
@@ -92,7 +96,7 @@ require __DIR__ . '/../src/templates/header.php';
                         <?php
                         foreach ($pokemons as $pokemonTeam) {
                             $pokemon = $pokemonTeam->getPokemon();
-                            echo '<td>' . e($pokemon->getNature()) . '</td>';
+                            echo '<td class="border border-indigo-600 p-2">' . e($pokemon->getNature()) . '</td>';
                         } ?>
                     </tr>
                 </tbody>

@@ -2,8 +2,8 @@
   "name": "pokeclub",
   "private": true,
   "scripts": {
-    "dev": "tailwindcss -i ./assets/css/tailwind.css -o ./public/assets/css/tailwind.css --watch",
-    "build": "tailwindcss -i ./assets/css/tailwind.css -o ./public/assets/css/tailwind.css --minify"
+    "dev": "tailwindcss -i ./src/assets/css/tailwind.css -o ./public/assets/css/tailwind.css --watch",
+    "build": "tailwindcss -i ./src/assets/css/tailwind.css -o ./public/assets/css/tailwind.css --minify"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.3.3",

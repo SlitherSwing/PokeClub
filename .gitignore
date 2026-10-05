@@ -1,7 +1,7 @@
 .DS_Store
 /node_modules/
 /public/assets/css/tailwind.css
-docs/PLAN_DE_DEVELOPPEMENT.md
-/docs/developpement-local/
 aide-memoire.md
-/require/config.local.php
+/src/require/config.local.php
+/src/docs/PLAN_DE_DEVELOPPEMENT.md
+/src/docs/developpement-local/

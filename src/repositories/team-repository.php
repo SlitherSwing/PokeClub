@@ -3,12 +3,12 @@
 class TeamRepository
 {
     private PDO $pdo;
-    private PokemonRepository $pokemons;
+    private PokemonRepository $pokemonRepository;
 
-    public function __construct(PDO $pdo, PokemonRepository $pokemons)
+    public function __construct(PDO $pdo, PokemonRepository $pokemonRepository)
     {
         $this->pdo = $pdo;
-        $this->pokemons = $pokemons;
+        $this->pokemonRepository = $pokemonRepository;
     }
 
     public function findFirst(): ?Team
@@ -40,14 +40,14 @@ class TeamRepository
         );
         $statement->execute(['team_id' => $id]);
 
-        foreach ($statement->fetchAll() as $member) {
-            $pokemon = $this->pokemons->findById((int) $member['pokemon_id']);
+        foreach ($statement->fetchAll() as $pokemonRow) {
+            $pokemon = $this->pokemonRepository->findById((int) $pokemonRow['pokemon_id']);
 
             if ($pokemon === null) {
                 throw new RuntimeException("Un Pokémon de l'équipe est introuvable.");
             }
 
-            $team->addPokemon($pokemon, $member['role']);
+            $team->addPokemon($pokemon, $pokemonRow['role']);
         }
 
         return $team;

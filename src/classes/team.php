@@ -5,7 +5,7 @@ class Team
     private ?int $id = null;
     private string $name;
 
-    private array $members = [];
+    private array $pokemons = [];
 
     public function __construct(string $name)
     {
@@ -32,29 +32,29 @@ class Team
 
     public function addPokemon(Pokemon $pokemon, string $role): void
     {
-        if (count($this->members) >= 6) {
+        if (count($this->pokemons) >= 6) {
             throw new InvalidArgumentException('Vous ne pouvez composez une équipe que de 6 pokémon distinct');
         }
 
-        foreach ($this->members as $member) {
-            if ($member->getPokemon() === $pokemon) {
+        foreach ($this->pokemons as $pokemonTeam) {
+            if ($pokemonTeam->getPokemon() === $pokemon) {
                 throw new InvalidArgumentException('Ce pokémon est déjà présent');
             }
         }
 
-        $this->members[] = new PokemonTeam($pokemon, $this, $role);
+        $this->pokemons[] = new PokemonTeam($pokemon, $this, $role);
     }
 
-    public function getMembers(): array
+    public function getPokemons(): array
     {
-        return array_values($this->members);
+        return array_values($this->pokemons);
     }
 
     public function removePokemon(Pokemon $pokemon): void
     {
-        foreach ($this->members as $index => $member) {
-            if ($member->getPokemon() === $pokemon) {
-                unset($this->members[$index]);
+        foreach ($this->pokemons as $index => $pokemonTeam) {
+            if ($pokemonTeam->getPokemon() === $pokemon) {
+                unset($this->pokemons[$index]);
                 return;
             }
         }

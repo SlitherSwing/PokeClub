@@ -2,8 +2,8 @@
 
 class Pokemon
 {
-    public const allowedTypes = ['normal', 'eau', 'feu', 'plante', 'spectre', 'ténèbre', 'glace', 'éléctrique', 'psy', 'dragon', 'fée', 'roche', 'sol', 'acier', 'combat', 'vol', 'insecte', 'poison'];
-    public const allowedNature = ['assuré', 'bold', 'bizarre', 'quirky', 'brave', 'calme', 'calm', 'discret', 'quiet', 'doux', 'mild', 'foufou', 'rash', 'gentil', 'gentle', 'hardi', 'hardy', 'jovial', 'jolly', 'lâche', 'lax', 'malin', 'impish', 'malpoli', 'sassy', 'mauvais', 'naughty', 'modeste', 'modest', 'naïf', 'naive', 'pressé', 'hasty', 'prudent', 'careful', 'pudique', 'bashful', 'relax', 'relaxed', 'rigide', 'adamant', 'serious', 'sérieux', 'solo', 'lonely', 'timide', 'timid'];
+    public const array ALLOWED_TYPES = ['normal', 'eau', 'feu', 'plante', 'spectre', 'ténèbre', 'glace', 'éléctrique', 'psy', 'dragon', 'fée', 'roche', 'sol', 'acier', 'combat', 'vol', 'insecte', 'poison'];
+    public const array ALLOWED_NATURE = ['assuré', 'bold', 'bizarre', 'quirky', 'brave', 'calme', 'calm', 'discret', 'quiet', 'doux', 'mild', 'foufou', 'rash', 'gentil', 'gentle', 'hardi', 'hardy', 'jovial', 'jolly', 'lâche', 'lax', 'malin', 'impish', 'malpoli', 'sassy', 'mauvais', 'naughty', 'modeste', 'modest', 'naïf', 'naive', 'pressé', 'hasty', 'prudent', 'careful', 'pudique', 'bashful', 'relax', 'relaxed', 'rigide', 'adamant', 'serious', 'sérieux', 'solo', 'lonely', 'timide', 'timid'];
     private ?int $id = null;
     private string $name;
     private array $types;
@@ -66,7 +66,7 @@ class Pokemon
                 if (in_array($lowerType, $usedType, true)) {
                     throw new InvalidArgumentException('Un pokémon ne peux avoir un double type identitque');
                 }
-                if (!in_array($lowerType, self::allowedTypes, true)) {
+                if (!in_array($lowerType, self::ALLOWED_TYPES, true)) {
                     throw new InvalidArgumentException('Le type du pokémon doit exister');
                 }
 
@@ -164,7 +164,7 @@ class Pokemon
         if ($nature === "") {
             throw new InvalidArgumentException('Un pokémon doit avoir une nature');
         }
-        if (!in_array($nature, self::allowedNature, true)) {
+        if (!in_array($nature, self::ALLOWED_NATURE, true)) {
             throw new InvalidArgumentException('La nature du pokémon doit être existé et être écrite en français ou anglais');
         }
         $this->nature = $nature;

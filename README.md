@@ -8,6 +8,7 @@ public/                 Pages et fichiers servis au navigateur
 src/
 ├── assets/             Sources du CSS
 ├── classes/            Classes PHP
+├── mappers/            Conversion entre les lignes SQL et les objets
 ├── repositories/       Requêtes vers la BDD
 ├── require/            Chargement commun et configuration
 ├── templates/          En-tête et pied de page

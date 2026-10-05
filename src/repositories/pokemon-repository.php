@@ -1,77 +1,44 @@
 <?php
 
+require_once __DIR__ . '/../mappers/pokemon-mapper.php';
+
 class PokemonRepository
 {
     private PDO $pdo;
+    private PokemonMapper $mapper;
 
     public function __construct(PDO $pdo)
     {
         $this->pdo = $pdo;
-    }
-
-    private function fromRow(array $row): Pokemon
-    {
-        $types = [$row['pokemon_type1']];
-        if ($row['pokemon_type2'] !== null) {
-            $types[] = $row['pokemon_type2'];
-        }
-
-        $moves = [];
-        foreach (['pokemon_move1', 'pokemon_move2', 'pokemon_move3', 'pokemon_move4'] as $column) {
-            if ($row[$column] !== null) {
-                $moves[] = $row[$column];
-            }
-        }
-
-        $points = [
-            'hp' => (int) $row['pokemon_hp'],
-            'atk' => (int) $row['pokemon_atk'],
-            'def' => (int) $row['pokemon_def'],
-            'spa' => (int) $row['pokemon_spa'],
-            'spd' => (int) $row['pokemon_spd'],
-            'spe' => (int) $row['pokemon_spe'],
-        ];
-
-        $pokemon = new Pokemon(
-            $row['pokemon_name'],
-            $types,
-            $moves,
-            $row['pokemon_item'] ?? '',
-            $points,
-            $row['pokemon_nature'],
-            $row['pokemon_picture']
-        );
-        $pokemon->setId((int) $row['id']);
-
-        return $pokemon;
+        $this->mapper = new PokemonMapper();
     }
 
     public function findByName(string $name): array
     {
         $name = trim($name);
 
-        $sql = $this->pdo->prepare('SELECT * FROM pokemon WHERE pokemon_name = :name ORDER BY id');
-        $sql->execute(['name' => $name]);
-        $rows = $sql->fetchAll();
+        $statement = $this->pdo->prepare('SELECT * FROM pokemon WHERE pokemon_name = :name ORDER BY id');
+        $statement->execute(['name' => $name]);
+        $rows = $statement->fetchAll();
 
         $pokemons = [];
         foreach ($rows as $row) {
-            $pokemons[] = $this->fromRow($row);
+            $pokemons[] = $this->mapper->fromRow($row);
         }
         return $pokemons;
     }
 
     public function findById(int $id): ?Pokemon
     {
-        $sql = $this->pdo->prepare('SELECT * FROM pokemon WHERE id = :id');
-        $sql->execute(['id' => $id]);
-        $row = $sql->fetch();
+        $statement = $this->pdo->prepare('SELECT * FROM pokemon WHERE id = :id');
+        $statement->execute(['id' => $id]);
+        $row = $statement->fetch();
 
         if ($row === false) {
             return null;
         }
 
-        return $this->fromRow($row);
+        return $this->mapper->fromRow($row);
     }
 
     public function findAll(): array
@@ -82,7 +49,7 @@ class PokemonRepository
 
         $pokemons = [];
         foreach ($rows as $row) {
-            $pokemons[] = $this->fromRow($row);
+            $pokemons[] = $this->mapper->fromRow($row);
         }
 
         return $pokemons;
@@ -90,28 +57,7 @@ class PokemonRepository
 
     public function save(Pokemon $pokemon): void
     {
-        $types = $pokemon->getTypes();
-        $moves = $pokemon->getMoves();
-        $points = $pokemon->getEffortPoints();
-
-        $data = [
-            'name' => $pokemon->getName(),
-            'type_1' => $types[0],
-            'type_2' => $types[1] ?? null,
-            'item' => $pokemon->getItem(),
-            'picture' => $pokemon->getPicture(),
-            'move_1' => $moves[0] ?? null,
-            'move_2' => $moves[1] ?? null,
-            'move_3' => $moves[2] ?? null,
-            'move_4' => $moves[3] ?? null,
-            'hp' => $points['hp'],
-            'atk' => $points['atk'],
-            'def' => $points['def'],
-            'spa' => $points['spa'],
-            'spd' => $points['spd'],
-            'spe' => $points['spe'],
-            'nature' => $pokemon->getNature(),
-        ];
+        $data = $this->mapper->toData($pokemon);
 
         if ($pokemon->getId() === null) {
             $sql = 'INSERT INTO pokemon (

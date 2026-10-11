@@ -1,9 +1,9 @@
 <?php
 
-require_once __DIR__ . '/../classes/pokemon.php';
+require_once __DIR__ . '/../require/classes.php';
 
 $pokemon = new Pokemon('Rampe-Aile', ['Insecte', 'Combat'], ['Close Combat', 'Seisme', 'Demi-tour', 'Abri'], 'Bandeau Choix', [2, 32, 0, 0, 0, 32], 'adamant', '');
-echo ('Le pokémon du jour est : ') . $pokemon->getName() . (', il est de type : ') . implode('/', $pokemon->getTypes()) . (' et sa nature est la suivante : ') . $pokemon->getNature() . PHP_EOL;
+echo ('Le pokémon du jour est : ') . $pokemon->getName() . (', il est de type : ') . implode('/', array_map(fn(PokemonType $type) => $type->label(), $pokemon->getTypes())) . (' et sa nature est la suivante : ') . $pokemon->getNature()->label() . PHP_EOL;
 echo ('Ses attaques sont les suivantes : ') . PHP_EOL;
 foreach ($pokemon->getMoves() as $move) {
     echo $move . PHP_EOL;

@@ -2,15 +2,13 @@
 
 class Pokemon
 {
-    public const array ALLOWED_TYPES = ['normal', 'eau', 'feu', 'plante', 'spectre', 'ténèbre', 'glace', 'éléctrique', 'psy', 'dragon', 'fée', 'roche', 'sol', 'acier', 'combat', 'vol', 'insecte', 'poison'];
-    public const array ALLOWED_NATURE = ['assuré', 'bold', 'bizarre', 'quirky', 'brave', 'calme', 'calm', 'discret', 'quiet', 'doux', 'mild', 'foufou', 'rash', 'gentil', 'gentle', 'hardi', 'hardy', 'jovial', 'jolly', 'lâche', 'lax', 'malin', 'impish', 'malpoli', 'sassy', 'mauvais', 'naughty', 'modeste', 'modest', 'naïf', 'naive', 'pressé', 'hasty', 'prudent', 'careful', 'pudique', 'bashful', 'relax', 'relaxed', 'rigide', 'adamant', 'serious', 'sérieux', 'solo', 'lonely', 'timide', 'timid'];
     private ?int $id = null;
     private string $name;
     private array $types;
     private array $moves;
     private string $item;
     private array $effortPoints;
-    private string $nature;
+    private PokemonNature $nature;
     private string $picture;
 
     public function __construct(string $name, array $types, array $moves, string $item, array $effortPoints, string $nature, string $picture)
@@ -54,27 +52,22 @@ class Pokemon
     }
     public function setTypes(array $types): void
     {
-        $cleanType = [];
-        $usedType = [];
+        $cleanTypes = [];
+        $usedTypes = [];
         if (count($types) > 2 || count($types) < 1) {
             throw new InvalidArgumentException('Le pokémon doit avoir 1 ou 2 types différents');
-        } else {
-            foreach ($types as $type) {
-                $type = trim($type);
-                $lowerType = mb_strtolower($type, 'UTF-8');
-
-                if (in_array($lowerType, $usedType, true)) {
-                    throw new InvalidArgumentException('Un pokémon ne peux avoir un double type identitque');
-                }
-                if (!in_array($lowerType, self::ALLOWED_TYPES, true)) {
-                    throw new InvalidArgumentException('Le type du pokémon doit exister');
-                }
-
-                $usedType[] = $lowerType;
-                $cleanType[] = $type;
-            }
         }
-        $this->types = $cleanType;
+        foreach ($types as $type) {
+            $pokemonType = PokemonType::fromLocalized($type);
+
+            if (in_array($pokemonType, $usedTypes, true)) {
+                throw new InvalidArgumentException('Un pokémon ne peux avoir un double type identitque');
+            }
+
+            $usedTypes[] = $pokemonType;
+            $cleanTypes[] = $pokemonType;
+        }
+        $this->types = $cleanTypes;
     }
 
     public function getMoves(): array
@@ -154,20 +147,17 @@ class Pokemon
         $this->effortPoints = $cleanPoints;
     }
 
-    public function getNature(): string
+    public function getNature(): PokemonNature
     {
         return $this->nature;
     }
     public function setNature(string $nature): void
     {
-        $nature = mb_strtolower(trim($nature));
-        if ($nature === "") {
+        $normalized = mb_strtolower(trim($nature));
+        if ($normalized === "") {
             throw new InvalidArgumentException('Un pokémon doit avoir une nature');
         }
-        if (!in_array($nature, self::ALLOWED_NATURE, true)) {
-            throw new InvalidArgumentException('La nature du pokémon doit être existé et être écrite en français ou anglais');
-        }
-        $this->nature = $nature;
+        $this->nature = PokemonNature::fromLocalized($nature);
     }
     public function getPicture(): string
     {

@@ -47,8 +47,8 @@ class PokemonMapper
 
         return [
             'name' => $pokemon->getName(),
-            'type_1' => $types[0],
-            'type_2' => $types[1] ?? null,
+            'type_1' => $types[0]->value,
+            'type_2' => isset($types[1]) ? $types[1]->value : null,
             'item' => $pokemon->getItem(),
             'picture' => $pokemon->getPicture(),
             'move_1' => $moves[0] ?? null,
@@ -61,7 +61,7 @@ class PokemonMapper
             'spa' => $points['spa'],
             'spd' => $points['spd'],
             'spe' => $points['spe'],
-            'nature' => $pokemon->getNature(),
+            'nature' => $pokemon->getNature()->value,
         ];
     }
 }

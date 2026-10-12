@@ -1,5 +1,7 @@
 <?php
 
+namespace PokeClub\classes;
+
 class OppoTeam
 {
     private ?int $id = null;

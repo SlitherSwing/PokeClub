@@ -1,5 +1,7 @@
 <?php
 
+namespace PokeClub\classes;
+
 enum PokemonNature: string
 {
     case Assure = 'assuré';

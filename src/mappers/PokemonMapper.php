@@ -1,5 +1,10 @@
 <?php
 
+namespace PokeClub\mappers;
+
+use PokeClub\classes\Pokemon;
+
+
 class PokemonMapper
 {
     public function fromRow(array $row): Pokemon

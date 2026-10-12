@@ -1,5 +1,7 @@
 <?php
 
+namespace PokeClub\classes;
+use DateTime;
 class Game
 {
     private ?int $id = null;

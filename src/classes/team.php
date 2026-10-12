@@ -1,5 +1,8 @@
 <?php
 
+namespace PokeClub\classes;
+use InvalidArgumentException;
+
 class Team
 {
     private ?int $id = null;

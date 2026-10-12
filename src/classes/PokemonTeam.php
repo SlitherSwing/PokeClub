@@ -1,5 +1,8 @@
 <?php
 
+namespace PokeClub\classes;
+use InvalidArgumentException;
+
 class PokemonTeam
 {
     private Pokemon $pokemon;

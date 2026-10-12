@@ -1,6 +1,10 @@
 <?php
 
-require_once __DIR__ . '/../mappers/PokemonMapper.php';
+namespace PokeClub\repositories;
+
+use PDO;
+use PokeClub\mappers\PokemonMapper;
+use PokeClub\classes\Pokemon;
 
 class PokemonRepository
 {

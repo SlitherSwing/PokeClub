@@ -1,5 +1,10 @@
 <?php
 
+namespace PokeClub\repositories;
+
+use PDO;
+use RuntimeException;
+use PokeClub\classes\Team;
 class TeamRepository
 {
     private PDO $pdo;

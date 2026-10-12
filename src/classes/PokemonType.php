@@ -1,5 +1,7 @@
 <?php
 
+namespace PokeClub\classes;
+
 enum PokemonType: string
 {
     case Normal = 'normal';

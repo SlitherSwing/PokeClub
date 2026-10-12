@@ -1,5 +1,8 @@
 <?php
 
+namespace PokeClub\classes;
+
+
 class ProPlayer
 {
     private ?int $id = null;

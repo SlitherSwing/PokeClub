@@ -14,11 +14,9 @@ $statLabels = ['hp' => 'PV', 'atk' => 'ATQ', 'def' => 'DÉF', 'spa' => 'A. SPÉ'
 $pageTitle = 'Mon équipe — PokeClub';
 $bodyClass = 'pokemon-page';
 $activePage = 'team';
+$mainContentId = 'home-main';
 require __DIR__ . '/../src/templates/header.php';
 ?>
-
-<a class="create-skip-link" href="#home-main">Aller à mon équipe</a>
-<?php require __DIR__ . '/../src/templates/navigation.php'; ?>
 
 <main id="home-main" class="create-container home-main">
     <div class="home-intro">

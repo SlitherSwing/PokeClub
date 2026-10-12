@@ -21,10 +21,6 @@ enum PokemonType: string
     case Insecte = 'insecte';
     case Poison = 'poison';
 
-    private const array LEGACY_MAP = [
-        'éléctrique' => 'électrique',
-    ];
-
     public function label(): string
     {
         return mb_convert_case($this->value, MB_CASE_TITLE, 'UTF-8');
@@ -33,8 +29,6 @@ enum PokemonType: string
     public static function fromLocalized(string $input): self
     {
         $normalized = mb_strtolower(trim($input), 'UTF-8');
-        $canonical = self::LEGACY_MAP[$normalized] ?? $normalized;
-
-        return self::from($canonical);
+        return self::from($normalized);
     }
 }

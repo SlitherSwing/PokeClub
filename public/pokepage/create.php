@@ -2,14 +2,9 @@
 require __DIR__ . '/../../src/require/bootstrap.php';
 $pageTitle = 'Créer un Pokémon — PokeClub';
 $bodyClass = 'pokemon-create-page';
-require __DIR__ . '/../../src/templates/header.php';
-?>
-
-<a class="create-skip-link" href="#create-main">Aller au formulaire</a>
-
-<?php
 $activePage = 'create';
-require __DIR__ . '/../../src/templates/navigation.php';
+$mainContentId = 'create-main';
+require __DIR__ . '/../../src/templates/header.php';
 ?>
 
 <main id="create-main" class="create-container create-main">

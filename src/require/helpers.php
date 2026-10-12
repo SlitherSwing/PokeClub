@@ -24,6 +24,3 @@ function verifyCsrf(): void
         exit('Formulaire expiré ou invalide.');
     }
 }
-
-?>
-

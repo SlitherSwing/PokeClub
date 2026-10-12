@@ -1,4 +1,10 @@
 <?php
+
+use PokeClub\repositories\PokemonRepository;
+use PokeClub\repositories\TeamRepository;
+use PokeClub\classes\PokemonType;
+use PokeClub\classes\PokemonNature;
+
 $pdo = require __DIR__ . '/../../src/require/bootstrap.php';
 
 $values = [

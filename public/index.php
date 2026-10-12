@@ -1,4 +1,8 @@
 <?php
+
+use PokeClub\repositories\PokemonRepository;
+use PokeClub\repositories\TeamRepository;
+
 $pdo = require __DIR__ . '/../src/require/bootstrap.php';
 $pokemonRepository = new PokemonRepository($pdo);
 $teamRepository = new TeamRepository($pdo, $pokemonRepository);

@@ -19,7 +19,7 @@ $pageTitle = 'Mon équipe — PokeClub';
 $bodyClass = 'pokemon-page';
 $activePage = 'team';
 $mainContentId = 'home-main';
-require __DIR__ . '/../src/templates/header.php';
+require __DIR__ . '/../src/View/header.php';
 ?>
 
 <main id="home-main" class="create-container home-main">
@@ -159,5 +159,5 @@ require __DIR__ . '/../src/templates/header.php';
     <footer class="create-footer">PokeClub <span aria-hidden="true">·</span> À chaque dresseur, son équipe.</footer>
 </main>
 
-<?php require __DIR__ . '/../src/templates/footer.php'; ?>
+<?php require __DIR__ . '/../src/View/footer.php'; ?>
 

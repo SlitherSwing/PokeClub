@@ -1,7 +1,7 @@
 <?php
 
 use PokeClub\repositories\PokemonRepository;
-use PokeClub\repositories\TeamRepository;
+use PokeClub\classes\Pokemon;
 use PokeClub\classes\PokemonType;
 use PokeClub\classes\PokemonNature;
 
@@ -121,7 +121,7 @@ $pageTitle = 'Créer un Pokémon — PokeClub';
 $bodyClass = 'pokemon-create-page';
 $activePage = 'create';
 $mainContentId = 'create-main';
-require __DIR__ . '/../../src/templates/header.php';
+require __DIR__ . '/../../src/View/header.php';
 ?>
 
 <main id="create-main" class="create-container create-main">
@@ -332,5 +332,5 @@ require __DIR__ . '/../../src/templates/header.php';
     <footer class="create-footer">PokeClub <span aria-hidden="true">·</span> À chaque dresseur, son équipe.</footer>
 </main>
 
-<?php require __DIR__ . '/../../src/templates/footer.php'; ?>
+<?php require __DIR__ . '/../../src/View/footer.php'; ?>
 

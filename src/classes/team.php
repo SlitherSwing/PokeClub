@@ -1,6 +1,7 @@
 <?php
 
 namespace PokeClub\classes;
+
 use InvalidArgumentException;
 
 class Team

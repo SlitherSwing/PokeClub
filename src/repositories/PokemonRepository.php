@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../mappers/pokemon-mapper.php';
+require_once __DIR__ . '/../mappers/PokemonMapper.php';
 
 class PokemonRepository
 {

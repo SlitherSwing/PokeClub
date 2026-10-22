@@ -1,8 +1,8 @@
 <?php
 
-namespace PokeClub\mappers;
+namespace PokeClub\Mapper;
 
-use PokeClub\classes\Pokemon;
+use PokeClub\Model\Pokemon;
 
 
 class PokemonMapper

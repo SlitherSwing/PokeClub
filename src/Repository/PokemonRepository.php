@@ -1,10 +1,10 @@
 <?php
 
-namespace PokeClub\repositories;
+namespace PokeClub\Repository;
 
 use PDO;
-use PokeClub\mappers\PokemonMapper;
-use PokeClub\classes\Pokemon;
+use PokeClub\Mapper\PokemonMapper;
+use PokeClub\Model\Pokemon;
 
 class PokemonRepository
 {

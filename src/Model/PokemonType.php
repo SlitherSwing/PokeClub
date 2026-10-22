@@ -1,6 +1,6 @@
 <?php
 
-namespace PokeClub\classes;
+namespace PokeClub\Model;
 
 enum PokemonType: string
 {

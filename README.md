@@ -7,11 +7,11 @@ Créateur d'équipe Pokémon
 public/                 Pages et fichiers servis au navigateur
 src/
 ├── assets/             Sources du CSS
-├── classes/            Classes PHP
-├── mappers/            Conversion entre les lignes SQL et les objets
-├── repositories/       Requêtes vers la BDD
+├── Model/            Classes PHP
+├── Mapper/            Conversion entre les lignes SQL et les objets
+├── Repository/       Requêtes vers la BDD
 ├── require/            Chargement commun et configuration
-├── templates/          En-tête et pied de page
+├── View/          En-tête et pied de page
 ├── scripts/            Fixtures et scripts PHP
 ├── docs/               Documents et notes locales
 └── sql/                Fichiers SQL

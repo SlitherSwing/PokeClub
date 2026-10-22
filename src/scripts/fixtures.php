@@ -1,6 +1,9 @@
 <?php
 
-require_once __DIR__ . '/../require/classes.php';
+use PokeClub\Model\Pokemon;
+use PokeClub\Model\PokemonType;
+
+require_once __DIR__ . '/../require/autoload.php';
 
 $pokemon = new Pokemon('Rampe-Aile', ['Insecte', 'Combat'], ['Close Combat', 'Seisme', 'Demi-tour', 'Abri'], 'Bandeau Choix', [2, 32, 0, 0, 0, 32], 'adamant', '');
 echo ('Le pokémon du jour est : ') . $pokemon->getName() . (', il est de type : ') . implode('/', array_map(fn(PokemonType $type) => $type->label(), $pokemon->getTypes())) . (' et sa nature est la suivante : ') . $pokemon->getNature()->label() . PHP_EOL;

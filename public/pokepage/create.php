@@ -1,9 +1,9 @@
 <?php
 
-use PokeClub\repositories\PokemonRepository;
-use PokeClub\classes\Pokemon;
-use PokeClub\classes\PokemonType;
-use PokeClub\classes\PokemonNature;
+use PokeClub\Repository\PokemonRepository;
+use PokeClub\Model\Pokemon;
+use PokeClub\Model\PokemonType;
+use PokeClub\Model\PokemonNature;
 
 $pdo = require __DIR__ . '/../../src/require/bootstrap.php';
 

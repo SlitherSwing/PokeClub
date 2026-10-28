@@ -7,7 +7,7 @@
             <h1>Votre équipe, Votre stratégie<span>.</span></h1>
             <p>Rassemblez vos partenaires et trouvez la combinaison qui vous ressemble.</p>
         </div>
-        <a class="create-submit" href="/pokepage/create.php">
+        <a class="create-submit" href="/?page=pokemon-create">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 aria-hidden="true">
                 <path d="M12 5v14M5 12h14" />
@@ -59,7 +59,7 @@
                 <h3>Une belle aventure commence ici.</h3>
                 <p>Votre équipe n’a pas encore de Pokémon. Découvrez les Pokémon disponibles ou créez votre premier
                     partenaire.</p>
-                <a class="create-submit" href="/pokepage/create.php">Créer mon premier Pokémon</a>
+                <a class="create-submit" href="/?page=pokemon-create">Créer mon premier Pokémon</a>
             </div>
         <?php } else { ?>
             <div class="home-pokemon-grid">
@@ -101,6 +101,7 @@
                                     <dd><?= e($pokemon->getNature()->label()) ?></dd>
                                 </div>
                             </dl>
+                            <a class="home-library-link" href="/?page=pokemon-edit&amp;id=<?= e((string) $pokemon->getId()) ?>">Modifier ce Pokémon</a>
                             <h4 class="home-card-label">ATTAQUES</h4>
                             <?php if (count($pokemon->getMoves()) === 0) { ?>
                                 <p class="home-no-moves">Aucune attaque renseignée.</p>

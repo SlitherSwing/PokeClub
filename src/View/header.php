@@ -27,7 +27,7 @@
         </a>
         <nav class="create-nav" aria-label="Navigation principale">
             <a href="/"<?= ($activePage ?? null) === 'team' ? ' aria-current="page"' : '' ?>>Mon équipe</a>
-            <a href="/pokepage/create.php"<?= ($activePage ?? null) === 'create' ? ' aria-current="page"' : '' ?>>Créer un Pokémon</a>
+            <a href="/?page=pokemon-create"<?= ($activePage ?? null) === 'create' ? ' aria-current="page"' : '' ?>>Créer un Pokémon</a>
         </nav>
     </div>
 </header>

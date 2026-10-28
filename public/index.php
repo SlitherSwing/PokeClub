@@ -21,6 +21,11 @@ switch ($page) {
         $controller->create();
         exit;
 
+    case 'pokemon-edit':
+        $controller = new PokemonController($pokemonRepository);
+        $controller->edit();
+        exit;
+
     case 'home':
         break;
 

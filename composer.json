@@ -9,7 +9,9 @@
         "ext-mbstring": "*",
         "ext-session": "*",
         "ext-filter": "*",
-        "ext-json": "*"
+        "ext-json": "*",
+        "monolog/monolog": "^3",
+        "symfony/validator": "^7.4"
     },
     "license": "proprietary",
     "authors": [

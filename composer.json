@@ -1,0 +1,26 @@
+{
+    "name": "slitherswing/pokeclub",
+    "description": "Créateur d’équipes Pokémon pour les TP 2 et 3",
+    "type": "project",
+    "require": {
+        "php": "^8.3",
+        "ext-pdo": "*",
+        "ext-pdo_mysql": "*",
+        "ext-mbstring": "*",
+        "ext-session": "*",
+        "ext-filter": "*",
+        "ext-json": "*"
+    },
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "SlitherSwing",
+            "email": "kevin.lf.mascaro@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "PokeClub\\": "src/"
+        }
+    }
+}

@@ -1,0 +1,149 @@
+POKECLUB — COMPTE RENDU DES TP 2 ET 3
+1er novembre 2026 — branche tp2
+
+Ce compte rendu décrit le TP2 déjà présent dans PokeClub et le travail terminé
+sur la fiche 03 du TP3. Les fiches suivantes du TP3 restent à réaliser.
+
+1. TP2 : ORGANISER LE CODE ET GÉRER LES POKÉMON
+
+Le but est de donner un rôle précis à chaque partie du projet.
+
+- Le modèle Pokemon représente un Pokémon : nom, types, attaques, objet,
+  nature, image et points. Il garde les règles métier, par exemple les types
+  différents, les attaques non répétées, 0 à 32 points par statistique et
+  66 points au maximum au total.
+- Les enums PokemonType et PokemonNature définissent les valeurs autorisées.
+- PokemonMapper transforme une ligne SQL en objet Pokemon et prépare les
+  données de l’objet pour l’enregistrement.
+- PokemonRepository utilise PDO pour lire et enregistrer les Pokémon.
+  Les requêtes restent dans ce fichier, pas dans les vues.
+- PokemonController prépare le formulaire, vérifie les demandes et appelle
+  le repository. public/index.php choisit l’action demandée par l’URL.
+- Les vues affichent le HTML. Les pages de création et de modification
+  partagent leurs champs dans src/View/pokemon/form.php.
+
+Les dossiers et noms de classes ont été harmonisés : Model, Mapper,
+Repository, Controller et View. Dans cette adaptation du sujet, le joueur
+Player correspond à Pokemon ; ProPlayer reste une classe distincte.
+
+Concrètement, lors d’une création :
+  1) Le navigateur ouvre /?page=pokemon-create.
+  2) Le contrôleur prépare un formulaire vide et la vue l’affiche.
+  3) À l’envoi, le serveur vérifie le jeton CSRF et les valeurs reçues.
+  4) Si elles sont valides, il construit un Pokemon et demande sa sauvegarde.
+  5) Le navigateur revient au formulaire avec un message de confirmation.
+     Un rafraîchissement de cette page ne répète pas l’ajout.
+
+Lors d’une modification, l’URL est /?page=pokemon-edit&id=1, avec un ID existant.
+Le formulaire est rempli depuis l’objet lu en base. Le nouvel objet reçoit
+l’ID d’origine avant save() : le repository fait un UPDATE, sans créer de doublon.
+Un lien « Modifier ce Pokémon » est disponible sur les cartes de l’équipe.
+
+En cas de saisie invalide, un message est affiché et la saisie est conservée.
+La validation est commune aux deux actions. Le HTML reste échappé avec e(),
+et les envois gardent leur protection CSRF. Les identifiants invalides ou
+absents de la base sont refusés. L’ancien formulaire public de création a été
+retiré après vérification ; l’ancienne URL d’édition redirige vers la route.
+
+2. TP3, FICHE 03 : COMPOSER ET DEUX BIBLIOTHÈQUES
+
+Composer est maintenant installé et gère les bibliothèques PHP du projet.
+Il ne remplace ni MySQL ni PDO.
+
+- composer.json décrit les dépendances, PHP et les extensions nécessaires.
+  Son mapping PSR-4 associe le préfixe PokeClub\ au dossier src/.
+- composer.lock conserve les versions exactes installées. Ces deux fichiers
+  sont suivis dans Git pour pouvoir reproduire l’installation.
+- vendor/ contient les bibliothèques et le chargeur généré. Il est ignoré
+  par Git et se reconstruit avec composer install.
+- Le bootstrap et les fixtures utilisent maintenant vendor/autoload.php.
+  Le chargeur manuel a été supprimé après vérification de ses références.
+  La session, les helpers et la connexion PDO ont été conservés.
+
+Deux bibliothèques ont été installées, essayées séparément puis intégrées :
+
+Symfony Validator 7.4.22
+  Le contrôleur utilise Validation::createValidator(), NotBlank et Length
+  pour vérifier que le nom est renseigné et ne dépasse pas 255 caractères.
+  Les violations deviennent des messages français dans le formulaire.
+  L’ancienne vérification du nom a été retirée pour éviter les doublons.
+  Les autres contrôles et les règles métier du modèle sont conservés.
+
+Monolog 3.12.1
+  src/require/logger.php configure un journal dans var/log/pokeclub.log,
+  hors du dossier public et ignoré par Git. Le logger est donné au contrôleur.
+  Une erreur de création, modification ou lecture produit un message générique
+  pour le visiteur. Le journal garde l’opération et les codes SQLSTATE/pilote,
+  sans mot de passe, formulaire, nom saisi ni trace d’exception.
+
+Le verrouillage contient huit paquets : ces deux bibliothèques et leurs
+six dépendances. Les contrôles de compatibilité n’ont pas été contournés.
+
+3. ENVIRONNEMENT ET COMMANDES POUR REPRENDRE
+
+Vérifié avec PHP 8.5.10 et Composer 2.11.1.
+Le projet demande PHP 8.3 minimum dans la branche 8.x. Le PHP 8.2.4 fourni
+par XAMPP sur cette machine est trop ancien pour le code déjà présent.
+MySQL peut rester démarré dans XAMPP ; servir PokeClub avec le PHP compatible :
+
+  /opt/homebrew/bin/php -S localhost:8000 -t public
+
+Ouvrir ensuite http://localhost:8000.
+
+Depuis la racine du projet, pour installer les bibliothèques :
+
+  composer install
+
+Cette commande reproduit composer.lock. Ne pas utiliser composer update
+simplement pour retrouver l’installation. La base et ses tables doivent déjà
+exister ; Composer ne les crée pas. Les identifiants restent dans le fichier
+local ignoré src/require/config.local.php. Le README détaille l’installation,
+la génération du CSS et les vérifications.
+
+4. VÉRIFICATIONS EFFECTUÉES
+
+- composer validate --strict : réussi.
+- composer check-platform-reqs : réussi avec PHP 8.5.10.
+- composer dump-autoload : réussi.
+- Syntaxe des 32 fichiers PHP applicatifs et de test : valide.
+- Fixtures : exemple de Pokémon affiché sans écriture en base.
+- php tests/composer.php : 57 contrôles autonomes réussis, sans base réelle.
+  Ils couvrent le chargement, le nom vide, les espaces, les limites Unicode
+  255/256, les règles métier et les erreurs PDO simulées. Le journal de test
+  est temporaire et supprimé après l’essai.
+- 57 contrôles HTTP/MySQL réussis dans une copie neuve du projet : création,
+  modification au même ID, absence de doublon après rafraîchissement,
+  champs facultatifs, erreurs de saisie, CSRF, routes et ID invalides,
+  échappement HTML et panne de sauvegarde volontaire correctement journalisée.
+  La base MySQL temporaire a été supprimée après les essais.
+- Réinstallation dans une copie sans vendor : composer install a recréé les
+  huit mêmes versions. L’empreinte de composer.lock est restée identique.
+- vendor et var/log ne sont pas suivis dans Git.
+- Les sept Pokémon réels sont conservés ; l’empreinte de toutes leurs lignes
+  a été comparée avant et après les essais et n’a pas changé.
+
+5. PETITS COMMITS SUR TP2
+
+Travail réparti sur environ 2 h 25 le 1er novembre 2026, avec au moins vingt
+minutes entre les commits. Chaque commit contient un ou deux fichiers.
+Les heures ci-dessous sont les heures réelles de Git, en Europe/Paris :
+
+18:15:32  eadc608  Préparer Composer et ignorer les dépendances PHP
+18:38:02  36e69bd  Installer Monolog et Symfony Validator
+18:58:13  c7bc382  Charger le projet avec Composer
+19:18:27  24deba5  Préparer le journal Monolog et retirer le chargeur manuel
+19:38:42  012a503  Valider le nom du Pokémon avec Symfony Validator
+19:59:01  60105dd  Journaliser les erreurs de base avec Monolog
+20:19:41  c09a188  Documenter et vérifier l’installation Composer
+
+Le huitième commit ajoute le présent compte rendu. Son identifiant et son
+heure se consultent avec git log -1, sans modifier les dates de l’historique.
+Les commits sont envoyés uniquement sur tp2. main conserve l’état « Fin TP2 »
+(commit 1095685) ; aucune fusion vers main n’est faite pour ce travail.
+Une sauvegarde du projet a été conservée avant de commencer la fiche 03.
+
+6. POINT DE REPRISE
+
+La fiche 03 est terminée : Composer et les deux bibliothèques sont réellement
+utilisés et leurs contrôles passent. Le prochain travail est la fiche 04,
+« TP 3 : PSR et livraison ». Elle n’a pas été réalisée dans cette intervention.

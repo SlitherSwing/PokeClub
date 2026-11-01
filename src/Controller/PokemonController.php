@@ -9,6 +9,8 @@ use PokeClub\Model\Pokemon;
 use PokeClub\Model\PokemonNature;
 use PokeClub\Model\PokemonType;
 use PokeClub\Repository\PokemonRepository;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Validation;
 
 class PokemonController
 {
@@ -182,13 +184,18 @@ class PokemonController
                 continue;
             }
             $values[$field] = trim($received);
-            if (mb_strlen($values[$field], 'UTF-8') > 255) {
+            if ($field !== 'name' && mb_strlen($values[$field], 'UTF-8') > 255) {
                 $errors[] = 'Chaque champ doit contenir au maximum 255 caractères.';
             }
         }
 
-        if ($values['name'] === '') {
-            $errors[] = 'Le nom du Pokémon est obligatoire.';
+        $validator = Validation::createValidator();
+        $violations = $validator->validate($values['name'], [
+            new Assert\NotBlank(message: 'Le nom du Pokémon est obligatoire.'),
+            new Assert\Length(max: 255, maxMessage: 'Le nom du Pokémon doit contenir au maximum 255 caractères.'),
+        ]);
+        foreach ($violations as $violation) {
+            $errors[] = $violation->getMessage();
         }
         if ($values['move-1'] === '') {
             $errors[] = 'La première attaque est obligatoire.';

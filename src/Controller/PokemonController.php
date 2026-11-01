@@ -9,16 +9,19 @@ use PokeClub\Model\Pokemon;
 use PokeClub\Model\PokemonNature;
 use PokeClub\Model\PokemonType;
 use PokeClub\Repository\PokemonRepository;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validation;
 
 class PokemonController
 {
     private PokemonRepository $repository;
+    private LoggerInterface $logger;
 
-    public function __construct(PokemonRepository $repository)
+    public function __construct(PokemonRepository $repository, LoggerInterface $logger)
     {
         $this->repository = $repository;
+        $this->logger = $logger;
     }
 
     public function create(): void
@@ -43,7 +46,7 @@ class PokemonController
                     header('Location: /?page=pokemon-create', true, 303);
                     exit;
                 } catch (PDOException $error) {
-                    error_log('Création Pokémon : ' . $error->getMessage());
+                    $this->logDatabaseError('creation', $error);
                     $errors[] = 'L’enregistrement a échoué. Réessayez dans quelques instants.';
                 }
             }
@@ -78,7 +81,7 @@ class PokemonController
         try {
             $pokemon = $this->repository->findById($id);
         } catch (PDOException $error) {
-            error_log('Lecture Pokémon : ' . $error->getMessage());
+            $this->logDatabaseError('lecture', $error);
             http_response_code(503);
             echo 'Le chargement a échoué. Réessayez dans quelques instants.';
             return;
@@ -130,7 +133,7 @@ class PokemonController
                     header('Location: /?page=pokemon-edit&id=' . $id, true, 303);
                     exit;
                 } catch (PDOException $error) {
-                    error_log('Modification Pokémon : ' . $error->getMessage());
+                    $this->logDatabaseError('modification', $error);
                     $errors[] = 'L’enregistrement a échoué. Réessayez dans quelques instants.';
                 }
             }
@@ -147,6 +150,15 @@ class PokemonController
         $formAction = '/?page=pokemon-edit&id=' . $id;
         $submitLabel = 'Enregistrer les modifications';
         require __DIR__ . '/../View/pokemon/edit.php';
+    }
+
+    private function logDatabaseError(string $operation, PDOException $error): void
+    {
+        $this->logger->error('Échec d’une opération sur un Pokémon.', [
+            'operation' => $operation,
+            'sqlstate' => (string) $error->getCode(),
+            'driver_code' => $error->errorInfo[1] ?? null,
+        ]);
     }
 
     private function defaultValues(): array

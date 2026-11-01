@@ -5,6 +5,7 @@ use PokeClub\Repository\PokemonRepository;
 use PokeClub\Repository\TeamRepository;
 
 $pdo = require __DIR__ . '/../src/require/bootstrap.php';
+$logger = require __DIR__ . '/../src/require/logger.php';
 $pokemonRepository = new PokemonRepository($pdo);
 
 $page = $_GET['page'] ?? 'home';
@@ -17,12 +18,12 @@ if (!is_string($page)) {
 
 switch ($page) {
     case 'pokemon-create':
-        $controller = new PokemonController($pokemonRepository);
+        $controller = new PokemonController($pokemonRepository, $logger);
         $controller->create();
         exit;
 
     case 'pokemon-edit':
-        $controller = new PokemonController($pokemonRepository);
+        $controller = new PokemonController($pokemonRepository, $logger);
         $controller->edit();
         exit;
 

@@ -17,7 +17,6 @@ src/
 └── sql/                Fichiers SQL
 vendor/                 Bibliothèques PHP installées par Composer (ignoré)
 var/log/                Journaux applicatifs hors du dossier public (ignoré)
-tests/                  Contrôles autonomes de la fiche 03
 ```
 
 Les fichiers de gestion du projet, dont `package.json`, `composer.json` et `composer.lock`, restent à la racine. La configuration locale est dans `src/require/config.local.php` et reste exclue de Git.
@@ -98,7 +97,7 @@ php src/scripts/fixtures.php
 
 Documentation : [installation avec Tailwind CLI](https://tailwindcss.com/docs/installation/tailwind-cli).
 
-## Bibliothèques de la fiche 03
+## Bibliothèques du TP 3
 
 Versions effectivement verrouillées : **Monolog 3.12.1** et **Symfony Validator 7.4.22**.
 Composer installe aussi leurs six dépendances ; le détail figure dans `composer.lock`.
@@ -112,29 +111,6 @@ Composer installe aussi leurs six dépendances ; le détail figure dans `compose
   est créé au premier message. Le serveur doit pouvoir y écrire. Le navigateur
   reçoit un message générique ; le journal conserve uniquement l’opération,
   le code SQLSTATE et le code du pilote, sans mot de passe ni formulaire.
-
-## Vérifications
-
-Depuis la racine du projet :
-
-```bash
-composer validate --strict
-composer check-platform-reqs
-composer dump-autoload
-php tests/composer.php
-php src/scripts/fixtures.php
-```
-
-`tests/composer.php` contrôle le chargement des classes, les erreurs du nom,
-les limites Unicode, les règles métier conservées et les erreurs de base simulées.
-Il écrit son journal dans un fichier temporaire ensuite supprimé et n’utilise
-aucune base réelle. Il vérifie aussi que le journal n’inclut pas les données de test
-privées présentes dans l’exception simulée.
-Les fixtures affichent un exemple de Pokémon sans écrire en base.
-
-Pour vérifier la reproductibilité, dans une **copie de test** contenant le code,
-`composer.json` et `composer.lock`, supprimer uniquement son dossier `vendor/`
-puis exécuter `composer install`. Les mêmes versions doivent être réinstallées.
 
 Documentation : [Composer](https://getcomposer.org/doc/01-basic-usage.md),
 [Monolog](https://github.com/Seldaek/monolog),

@@ -103,14 +103,14 @@ Versions effectivement verrouillées : **Monolog 3.12.1** et **Symfony Validator
 Composer installe aussi leurs six dépendances ; le détail figure dans `composer.lock`.
 
 - **Symfony Validator** vérifie que le nom du Pokémon est renseigné et contient au
-  maximum 255 caractères. Le contrôleur transforme ses violations en messages
-  français dans le formulaire. Les règles de points, de types et d’attaques restent
-  dans le modèle `Pokemon`.
+  maximum 255 caractères, ainsi que l’URL de l’image si elle est renseignée.
+  Le formulaire affiche la première erreur rencontrée. Les règles de points,
+  de types et d’attaques restent dans le modèle `Pokemon`.
 - **Monolog** écrit les erreurs de création, modification et lecture dans
   `var/log/pokeclub.log`. `src/require/logger.php` configure le journal ; le dossier
   est créé au premier message. Le serveur doit pouvoir y écrire. Le navigateur
-  reçoit un message générique ; le journal conserve uniquement l’opération,
-  le code SQLSTATE et le code du pilote, sans mot de passe ni formulaire.
+  reçoit un message générique ; le journal indique simplement si la création,
+  la modification ou la lecture a échoué.
 
 Documentation : [Composer](https://getcomposer.org/doc/01-basic-usage.md),
 [Monolog](https://github.com/Seldaek/monolog),

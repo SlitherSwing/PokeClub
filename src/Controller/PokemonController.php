@@ -3,22 +3,20 @@
 namespace PokeClub\Controller;
 
 use InvalidArgumentException;
+use Monolog\Logger;
 use PDOException;
 use ValueError;
 use PokeClub\Model\Pokemon;
-use PokeClub\Model\PokemonNature;
-use PokeClub\Model\PokemonType;
 use PokeClub\Repository\PokemonRepository;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validation;
 
 class PokemonController
 {
     private PokemonRepository $repository;
-    private LoggerInterface $logger;
+    private Logger $logger;
 
-    public function __construct(PokemonRepository $repository, LoggerInterface $logger)
+    public function __construct(PokemonRepository $repository, Logger $logger)
     {
         $this->repository = $repository;
         $this->logger = $logger;
@@ -34,26 +32,23 @@ class PokemonController
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             verifyCsrf();
-            $result = $this->validateForm($_POST);
-            $values = $result['values'];
-            $errors = $result['errors'];
-            $pokemon = $result['pokemon'];
 
-            if ($errors === [] && $pokemon !== null) {
-                try {
-                    $this->repository->save($pokemon);
-                    $_SESSION['pokemon_created'] = $pokemon->getName();
-                    header('Location: /?page=pokemon-create', true, 303);
-                    exit;
-                } catch (PDOException $error) {
-                    $this->logDatabaseError('creation', $error);
-                    $errors[] = 'L’enregistrement a échoué. Réessayez dans quelques instants.';
-                }
+            try {
+                $values = $this->readForm($values);
+                $pokemon = $this->createPokemon($values);
+                $this->repository->save($pokemon);
+
+                $_SESSION['pokemon_created'] = $pokemon->getName();
+                header('Location: /?page=pokemon-create', true, 303);
+                exit;
+            } catch (InvalidArgumentException $error) {
+                $errors[] = $error->getMessage();
+            } catch (PDOException $error) {
+                $this->logger->error('Impossible de créer le Pokémon.');
+                $errors[] = 'L’enregistrement a échoué. Réessayez dans quelques instants.';
             }
 
-            if ($errors !== []) {
-                http_response_code(422);
-            }
+            http_response_code(422);
         }
 
         $pageTitle = 'Créer un Pokémon — PokeClub';
@@ -67,10 +62,7 @@ class PokemonController
 
     public function edit(): void
     {
-        $rawId = $_GET['id'] ?? null;
-        $id = is_string($rawId)
-            ? filter_var($rawId, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]])
-            : false;
+        $id = filter_var($_GET['id'] ?? '', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 
         if ($id === false) {
             http_response_code(400);
@@ -81,7 +73,7 @@ class PokemonController
         try {
             $pokemon = $this->repository->findById($id);
         } catch (PDOException $error) {
-            $this->logDatabaseError('lecture', $error);
+            $this->logger->error('Impossible de charger le Pokémon.');
             http_response_code(503);
             echo 'Le chargement a échoué. Réessayez dans quelques instants.';
             return;
@@ -101,7 +93,7 @@ class PokemonController
             'nature' => $pokemon->getNature()->value,
             'picture' => $pokemon->getPicture(),
             'type-1' => $types[0]->value,
-            'type-2' => isset($types[1]) ? $types[1]->value : '',
+            'type-2' => $types[1]->value ?? '',
             'item' => $pokemon->getItem(),
             'move-1' => $moves[0] ?? '',
             'move-2' => $moves[1] ?? '',
@@ -119,28 +111,24 @@ class PokemonController
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             verifyCsrf();
-            $result = $this->validateForm($_POST);
-            $values = $result['values'];
-            $errors = $result['errors'];
-            $updatedPokemon = $result['pokemon'];
 
-            if ($errors === [] && $updatedPokemon !== null) {
-                try {
-                    // L’ID existant fait choisir UPDATE au repository.
-                    $updatedPokemon->setId($id);
-                    $this->repository->save($updatedPokemon);
-                    $_SESSION['pokemon_updated'] = $id;
-                    header('Location: /?page=pokemon-edit&id=' . $id, true, 303);
-                    exit;
-                } catch (PDOException $error) {
-                    $this->logDatabaseError('modification', $error);
-                    $errors[] = 'L’enregistrement a échoué. Réessayez dans quelques instants.';
-                }
+            try {
+                $values = $this->readForm($values);
+                $pokemon = $this->createPokemon($values);
+                $pokemon->setId($id);
+                $this->repository->save($pokemon);
+
+                $_SESSION['pokemon_updated'] = $id;
+                header('Location: /?page=pokemon-edit&id=' . $id, true, 303);
+                exit;
+            } catch (InvalidArgumentException $error) {
+                $errors[] = $error->getMessage();
+            } catch (PDOException $error) {
+                $this->logger->error('Impossible de modifier le Pokémon.');
+                $errors[] = 'L’enregistrement a échoué. Réessayez dans quelques instants.';
             }
 
-            if ($errors !== []) {
-                http_response_code(422);
-            }
+            http_response_code(422);
         }
 
         $pageTitle = 'Modifier un Pokémon — PokeClub';
@@ -152,22 +140,13 @@ class PokemonController
         require __DIR__ . '/../View/pokemon/edit.php';
     }
 
-    private function logDatabaseError(string $operation, PDOException $error): void
-    {
-        $this->logger->error('Échec d’une opération sur un Pokémon.', [
-            'operation' => $operation,
-            'sqlstate' => (string) $error->getCode(),
-            'driver_code' => $error->errorInfo[1] ?? null,
-        ]);
-    }
-
     private function defaultValues(): array
     {
         return [
             'name' => '',
-            'nature' => PokemonNature::Assure->value,
+            'nature' => 'assuré',
             'picture' => '',
-            'type-1' => PokemonType::Normal->value,
+            'type-1' => 'normal',
             'type-2' => '',
             'item' => '',
             'move-1' => '',
@@ -183,89 +162,81 @@ class PokemonController
         ];
     }
 
-    /** @return array{values: array, errors: array, pokemon: ?Pokemon} */
-    private function validateForm(array $input): array
+    private function readForm(array $values): array
     {
-        $values = $this->defaultValues();
-        $errors = [];
-        $pokemon = null;
-        foreach ($values as $field => $default) {
-            $received = $input[$field] ?? '';
-            if (!is_string($received)) {
-                $errors[] = 'Un champ contient une valeur invalide.';
-                continue;
+        foreach ($values as $field => $value) {
+            $value = $_POST[$field] ?? '';
+            if (!is_string($value)) {
+                throw new InvalidArgumentException('Un champ contient une valeur invalide.');
             }
-            $values[$field] = trim($received);
-            if ($field !== 'name' && mb_strlen($values[$field], 'UTF-8') > 255) {
-                $errors[] = 'Chaque champ doit contenir au maximum 255 caractères.';
-            }
+            $values[$field] = trim($value);
         }
 
+        return $values;
+    }
+
+    private function createPokemon(array $values): Pokemon
+    {
         $validator = Validation::createValidator();
         $violations = $validator->validate($values['name'], [
             new Assert\NotBlank(message: 'Le nom du Pokémon est obligatoire.'),
             new Assert\Length(max: 255, maxMessage: 'Le nom du Pokémon doit contenir au maximum 255 caractères.'),
         ]);
         foreach ($violations as $violation) {
-            $errors[] = $violation->getMessage();
+            throw new InvalidArgumentException($violation->getMessage());
+        }
+
+        $violations = $validator->validate($values['picture'], new Assert\Url(
+            protocols: ['http', 'https'],
+            requireTld: false,
+            message: 'L’image doit être une URL commençant par http:// ou https://.'
+        ));
+        foreach ($violations as $violation) {
+            throw new InvalidArgumentException($violation->getMessage());
+        }
+
+        foreach ($values as $value) {
+            if (mb_strlen($value, 'UTF-8') > 255) {
+                throw new InvalidArgumentException('Chaque champ doit contenir au maximum 255 caractères.');
+            }
         }
         if ($values['move-1'] === '') {
-            $errors[] = 'La première attaque est obligatoire.';
-        }
-        if (PokemonNature::tryFrom($values['nature']) === null) {
-            $errors[] = 'Choisissez une nature proposée dans la liste.';
-        }
-        if (
-            PokemonType::tryFrom($values['type-1']) === null
-            || ($values['type-2'] !== '' && PokemonType::tryFrom($values['type-2']) === null)
-        ) {
-            $errors[] = 'Choisissez des types proposés dans les listes.';
-        }
-        if (
-            $values['picture'] !== '' && (!filter_var($values['picture'], FILTER_VALIDATE_URL)
-                || !in_array(strtolower((string) parse_url($values['picture'], PHP_URL_SCHEME)), ['http', 'https'], true))
-        ) {
-            $errors[] = 'L’image doit être une URL commençant par http:// ou https://.';
+            throw new InvalidArgumentException('La première attaque est obligatoire.');
         }
 
         $points = [];
         foreach (['hp', 'atk', 'def', 'spa', 'spd', 'spe'] as $stat) {
             $value = $values[$stat] === '' ? '0' : $values[$stat];
-            $number = filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 0, 'max_range' => 32]]);
-            if ($number === false) {
-                $errors[] = 'Chaque statistique doit être un entier compris entre 0 et 32.';
-            } else {
-                $points[$stat] = $number;
+            $points[$stat] = filter_var($value, FILTER_VALIDATE_INT);
+            if ($points[$stat] === false) {
+                throw new InvalidArgumentException('Chaque statistique doit être un entier.');
             }
         }
 
-        if ($errors === []) {
-            $types = [$values['type-1']];
-            if ($values['type-2'] !== '') {
-                $types[] = $values['type-2'];
-            }
-            $moves = [];
-            foreach (['move-1', 'move-2', 'move-3', 'move-4'] as $field) {
-                if ($values[$field] !== '') {
-                    $moves[] = $values[$field];
-                }
-            }
-
-            try {
-                $pokemon = new Pokemon(
-                    $values['name'],
-                    $types,
-                    $moves,
-                    $values['item'],
-                    $points,
-                    $values['nature'],
-                    $values['picture']
-                );
-            } catch (InvalidArgumentException | ValueError $error) {
-                $errors[] = $error->getMessage();
+        $types = [$values['type-1']];
+        if ($values['type-2'] !== '') {
+            $types[] = $values['type-2'];
+        }
+        $moves = [];
+        foreach (['move-1', 'move-2', 'move-3', 'move-4'] as $field) {
+            if ($values[$field] !== '') {
+                $moves[] = $values[$field];
             }
         }
 
-        return ['values' => $values, 'errors' => $errors, 'pokemon' => $pokemon];
+        // Le modèle vérifie les types, la nature, les attaques et les limites des statistiques.
+        try {
+            return new Pokemon(
+                $values['name'],
+                $types,
+                $moves,
+                $values['item'],
+                $points,
+                $values['nature'],
+                $values['picture']
+            );
+        } catch (ValueError $error) {
+            throw new InvalidArgumentException('Choisissez une nature et des types proposés dans les listes.');
+        }
     }
 }
